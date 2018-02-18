@@ -22,9 +22,8 @@ So we can write subproblem like this.
 But the result can be different depends on the 1st house's color value.
 So we have to consider all the possibilities of 1st house's color. There is 3 possibilities.
 
-  1st is R: d[i][0] = Min(d[i-1][1], d[i-1][2]) + color[i][0]
+  i'th is R: d[i][0] = Min(d[i-1][1], d[i-1][2]) + color[i][0]
   
-  2nd is G: d[i][1] = Min(d[i-1][0], d[i-1][2]) + color[i][1]
+  i'th is G: d[i][1] = Min(d[i-1][0], d[i-1][2]) + color[i][1]
   
-  3rd is B: d[i][2] = Min(d[i-1][0], d[i-1][1]) + color[i][2]
-
+  i'th is B: d[i][2] = Min(d[i-1][0], d[i-1][1]) + color[i][2]
