@@ -10,7 +10,9 @@ source: https://www.careercup.com/question?id=9941005
 
 #Solution: 
 Let's think about the minimum value of painting i'th house.
+
 2nd house painting value: 1st house painting value + 2nd house painting value
+
 3rd house painting value: 2nd house painting value + 3rd house painting value
  
 So we can write subproblem like this. 
