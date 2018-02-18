@@ -27,3 +27,7 @@ So we have to consider all the possibilities of 1st house's color. There is 3 po
   i'th is G: d[i][1] = Min(d[i-1][0], d[i-1][2]) + color[i][1]
   
   i'th is B: d[i][2] = Min(d[i-1][0], d[i-1][1]) + color[i][2]
+
+For last, let's solve original problem. (n is the number of houses)
+
+    Min(Min(d[n][0], d[n][1]), d[n][2]))
