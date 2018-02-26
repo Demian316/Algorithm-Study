@@ -1,0 +1,165 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>sample1</title>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <canvas id='canvas' width=400 height=300></canvas>
+    <script type='text/javascript'>
+      var canvas=document.getElementById('canvas');
+      var ctx   =canvas.getContext('2d');
+    </script>
+    <script type='text/javascript'>
+      function Node(i,x,y){
+        this.connection=[];
+        this.count=0;
+        this.index=i;
+        this.filter=[];
+        this.x=x;
+        this.y=y;
+      }
+      Node.prototype.addConnection=function(){
+        for(var i=0; i<arguments.length; i++){
+          this.connection.push(arguments[i]);
+        }
+      }
+      Node.prototype.draw=function(){
+        ctx.arc(this.x,this.y,25,0,(Math.PI/180)*360);
+        ctx.stroke();
+      }
+      var activeNode=[];
+      var str=['A','B','C','D','E','F','G','H','I'];
+      var nodes=[];
+      var pos=[
+        [30,100],
+        [80,30],
+        [80,150],
+        [200,30],
+        [280,130],
+        [50,250],
+        [200,230],
+        [360,150],
+        [130,200],
+      ];
+      function nodeDraw(){
+        ctx.textBaseline="middle";
+        ctx.textAlign="center";
+        ctx.font="15px 맑은고딕";
+        ctx.strokeStyle='#000';
+        for(var i=0; i<pos.length; i++){
+          ctx.beginPath();
+          ctx.arc(pos[i][0],pos[i][1],25,0,Math.PI*2);
+          ctx.stroke();
+          if(activeNode.indexOf(i)!==-1){
+            ctx.fillStyle='skyblue';
+          }else{
+            ctx.fillStyle='#fff';
+          }
+          ctx.fill();
+          ctx.fillStyle='#000';
+          ctx.fillText(str[i],pos[i][0],pos[i][1]);
+        }
+      }
+      function pathDraw(){
+        for(var i=0; i<nodes.length; i++){
+          var t=nodes[i];
+          for(var j=0; j<t.connection.length; j++){
+            var o=t.connection[j];
+            ctx.strokeStyle='#000';
+            if(t.filter.includes(o) || o.filter.includes(t)){
+              ctx.strokeStyle='red';
+            }
+            ctx.beginPath();
+            ctx.moveTo(pos[t.index][0],pos[t.index][1])
+            ctx.lineTo(pos[o.index][0],pos[o.index][1]);
+            ctx.stroke();
+          }
+        }
+      }
+      function clear(){
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        pathDraw();
+        nodeDraw();
+      }
+      init();
+      clear();
+      canvas.onclick=function(e){
+        var x=e.offsetX,
+            y=e.offsetY;
+        for(var i=0; i<pos.length; i++){
+          if(pos[i][0]-25<x && x<pos[i][0]+25 && pos[i][1]-25<y && pos[i][1]+25>y){
+            activeNode.push(i);
+            pathDraw();
+            nodeDraw();
+            if(activeNode.length===2){
+              search(activeNode[0],activeNode[1]);
+            }
+            break;
+          }
+        }
+      }
+      function init(){
+        nodes=[];
+        for(var i=0; i<9; i++){
+          nodes.push(new Node(i,pos[i][0],pos[i][1]));
+        }
+        nodes[0].addConnection(nodes[1],nodes[2],nodes[3]);
+        nodes[1].addConnection(nodes[0],nodes[3],nodes[4]);
+        nodes[2].addConnection(nodes[0],nodes[5],nodes[8]);
+        nodes[3].addConnection(nodes[0],nodes[1],nodes[4],nodes[5],nodes[6]);
+        nodes[4].addConnection(nodes[1],nodes[3],nodes[6],nodes[7]);
+        nodes[5].addConnection(nodes[2],nodes[3],nodes[8],nodes[6]);
+        nodes[6].addConnection(nodes[3],nodes[4],nodes[4],nodes[7],nodes[8]);
+        nodes[7].addConnection(nodes[4],nodes[6]);
+        nodes[8].addConnection(nodes[2],nodes[5],nodes[6]);
+      }
+      function search(s,e){
+        init();
+        if(typeof s=='number'){
+          s=nodes[s];
+        }
+        if(typeof e=='number'){
+          e=nodes[e];
+        }
+        var Q=[s];
+        while( Q.length>0 ){
+          var n=Q.shift();
+          if(n.visited===true){
+            continue;
+          }
+          for(var i=0; i<n.connection.length; i++){
+            var c=n.connection[i];
+            if(c.visited===true){
+              continue;
+            }
+            Q.push(c);
+            if(c.count!==0 && c.count<n.count+1){
+              continue;
+            }
+            c.prev=n;
+            c.count=n.count+1;
+          }
+          n.visited=true;
+        }
+        var temp=e;
+        var path=[];
+        while(temp.prev){
+          path.unshift(temp);
+          temp=temp.prev;
+        }
+        path.unshift(s);
+        console.log(e.count);
+        console.log(path);
+        for(var i=0; i<path.length-1; i++){
+          path[i].filter.push(path[i+1]);
+          path[i+1].filter.push(path[i]);
+        }
+        clear();
+        init();
+        activeNode=[];
+        return;
+      }
+    </script>
+  </body>
+</html>
